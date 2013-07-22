@@ -1,0 +1,111 @@
+#!/bin/bash -e
+#
+# Assumptions:
+#    1. REPO is a directory that exists and is writeable
+#    2. REPO is configured in pacman with its own separate CONFIG file
+#    3. (Optional) CONFIG is Include'd from pacman.conf
+#
+# Example CONFIG file:
+#
+# [build]
+# SigLevel = Optional TrustAll
+# Server = file:///data/repo
+#
+
+err() {
+	printf "$1\n" >&2
+}
+
+msg() {
+	printf "$1\n"
+}
+
+if [[ -f /etc/pacrepo.conf ]]; then
+	. /etc/pacrepo.conf
+fi
+
+REPO="${REPO-/srv/repo}"
+CONFIG="${CONFIG-"/etc/pacman.d/build.repo"}"
+
+sec_pre='[[:space:]]*\['
+sec_post='\][[:space:]]*'
+reponames=( $(sed -nr "/^$sec_pre.*$sec_post$/ s/^$sec_pre|$sec_post$//gp" "$CONFIG") )
+
+prog="$(basename "$0")"
+file="$1"
+repo="${2-${reponames[0]}}"
+pkg="$(basename "${file%-*-*-*.pkg.tar.xz}")"
+files="$REPO/$pkg"-*.pkg.*
+db="$REPO/$repo.db.tar.gz"
+
+# make sure a valid repo is configured
+if [ "$repo" = "" ]; then
+	err "No valid repo found"
+	exit 1
+fi
+
+## check for root
+#if [ "$(whoami)" != root ]; then
+#	err "You must be root to run this"
+#	exit 1
+#fi
+
+add_pkg() {
+	# check for proper arguments
+	if [ "$file" = ""  ]; then
+	    err "Usage: $prog <package> [repo]"
+	    exit 1
+	elif [ ! -f "$file" ]; then
+		err "$file is not a valid file"
+		exit 1
+	elif [ "$file" = $pkg ]; then
+		err "$file has an invalid package extension"
+		exit 1
+	fi
+	
+	if [[ "$HOST" == "" ]]; then
+		# remove old versions of the package
+		rm -vf $REPO/$pkg-*.pkg.tar.xz
+		
+		# add package to the repo
+		msg "Adding $file to repo..."
+		cp -v "$file" "$REPO/"
+		repo-add "$db" "$REPO/$(basename "$file")"
+	else
+		# remove old versions of the package
+		ssh "$HOST" rm -vf $REPO/$pkg-*.pkg.tar.xz
+		
+		# add package to the repo
+		msg "Adding $file to repo..."
+		scp -v "$file" "$HOST:$REPO/"
+		ssh "$HOST" repo-add "$db" "$REPO/$(basename "$file")"
+
+	fi
+	
+}
+
+rm_pkg() {
+	# check for proper arguments
+	if [ "$pkg" = ""  ]; then
+	    err "Usage: $prog <package> [repo]"
+	    exit 1
+	fi
+	
+	# remove all versions of the package
+	if [ -f $REPO/$pkg-*.pkg.tar.xz ]; then
+		msg "Removing $pkg from repo..."
+		rm -v $files
+	fi
+	
+	# add package to the repo
+	repo-remove "$db" "$pkg"
+	
+	#pacman --config="$CONFIG" -Sy
+}
+
+case "$prog" in
+  addpkg) add_pkg ;;
+  rmpkg)  rm_pkg ;;
+  *)      pacman -Sy --config="$CONFIG" ;;
+esac
+
