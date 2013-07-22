@@ -39,7 +39,7 @@ files="$REPO/$pkg"-*.pkg.*
 db="$REPO/$repo.db.tar.gz"
 
 # make sure a valid repo is configured
-if [ "$repo" = "" ]; then
+if [[ "$repo" = "" ]]; then
 	err "No valid repo found"
 	exit 1
 fi
@@ -52,13 +52,13 @@ fi
 
 add_pkg() {
 	# check for proper arguments
-	if [ "$file" = ""  ]; then
+	if [[ "$file" = ""  ]]; then
 	    err "Usage: $prog <package> [repo]"
 	    exit 1
-	elif [ ! -f "$file" ]; then
+	elif [[  ! -f "$file" ]]; then
 		err "$file is not a valid file"
 		exit 1
-	elif [ "$file" = $pkg ]; then
+	elif [[  "$file" = $pkg ]]; then
 		err "$file has an invalid package extension"
 		exit 1
 	fi
@@ -86,13 +86,13 @@ add_pkg() {
 
 rm_pkg() {
 	# check for proper arguments
-	if [ "$pkg" = ""  ]; then
+	if [[  "$pkg" = ""  ]]; then
 	    err "Usage: $prog <package> [repo]"
 	    exit 1
 	fi
 	
 	# remove all versions of the package
-	if [ -f $REPO/$pkg-*.pkg.tar.xz ]; then
+	if [[  -f $REPO/$pkg-*.pkg.tar.xz ]]; then
 		msg "Removing $pkg from repo..."
 		rm -v $files
 	fi
