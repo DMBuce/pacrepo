@@ -40,6 +40,9 @@ INSTALL         = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA    = ${INSTALL} -m 644
 
+LN_S        = ln -s
+SED_INPLACE = sed -i
+
 PACKAGE   = pacrepo
 PROG      = pacrepo
 #VERSION   = 0.0.0
@@ -78,16 +81,16 @@ $(DESTDIR)$(sysconfdir)/$(PROG).conf: etc/$(PROG).conf
 	$(INSTALL) $< $@
 
 $(DESTDIR)$(bindir)/addpkg:
-	ln -s $(PROG) $@
+	$(LN_S) $(PROG) $@
 
 $(DESTDIR)$(bindir)/rmpkg:
-	ln -s $(PROG) $@
+	$(LN_S) $(PROG) $@
 
 $(DESTDIR)$(bindir)/$(PROG): bin/$(PROG)
 	$(INSTALL_PROGRAM) $< $@
 
 bin/$(PROG): bin/$(PROG).in
 	cp $< $@
-	sed -i '/CONFIG=/  s?@sysconfdir@?$(sysconfdir)?'   $@
+	$(SED_INPLACE) '/CONFIG=/  s?@sysconfdir@?$(sysconfdir)?'   $@
 
 # vim: set ft=make:
