@@ -91,7 +91,7 @@ rm_pkg() {
 	    exit 1
 	fi
 	
-	if [[ "$HSOT" == "" ]]; then
+	if [[ "$HOST" == "" ]]; then
 		# remove all versions of the package
 		rm -vf $files
 		# add package to the repo
