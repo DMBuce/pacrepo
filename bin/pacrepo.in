@@ -91,16 +91,16 @@ rm_pkg() {
 	    exit 1
 	fi
 	
-	# remove all versions of the package
-	if [[  -f $REPO/$pkg-*.pkg.tar.xz ]]; then
-		msg "Removing $pkg from repo..."
-		rm -v $files
+	if [[ "$HSOT" == "" ]]; then
+		# remove all versions of the package
+		rm -vf $files
+		# add package to the repo
+		repo-remove "$db" "$pkg"
+	else
+		# remove all versions of the package
+		# add package to the repo
+		ssh "$HOST" "rm -vf $files; repo-remove \"$db\" \"$pkg\""
 	fi
-	
-	# add package to the repo
-	repo-remove "$db" "$pkg"
-	
-	#pacman --config="$CONFIG" -Sy
 }
 
 case "$prog" in
