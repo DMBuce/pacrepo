@@ -91,6 +91,6 @@ $(DESTDIR)$(bindir)/$(PROG): bin/$(PROG)
 
 bin/$(PROG): bin/$(PROG).in
 	cp $< $@
-	$(SED_INPLACE) '/CONFIG=/  s?@sysconfdir@?$(sysconfdir)?'   $@
+	$(SED_INPLACE) 's?@sysconfdir@?$(sysconfdir)?g'   $@
 
 # vim: set ft=make:
