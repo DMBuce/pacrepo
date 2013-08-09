@@ -76,7 +76,7 @@ rm_pkg() {
 pacrepo() {
 	# if the config file has only a single repo,
 	# update packages from that repo
-	if [[ "${#reponames[@]}" == 0 ]]; then
+	if [[ "${#reponames[@]}" == 1 ]]; then
 		pacman -Syu --config="$CONFIG"
 	else
 		msg "Refusing to sync and update from multiple repositories."
