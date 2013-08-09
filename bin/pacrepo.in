@@ -22,7 +22,7 @@ msg() {
 
 add_pkg() {
 	# check for proper arguments
-	if [[ "$file" = "" ]]; then
+	if [[ "$file" = "" || "$1" == "--help" || "$1" == "-h" ]]; then
 	    err "Usage: $prog <package>\n\n    Add <package> to repository."
 	    exit 1
 	elif [[ ! -f "$file" ]]; then
@@ -56,7 +56,7 @@ add_pkg() {
 
 rm_pkg() {
 	# check for proper arguments
-	if [[ "$pkg" = "" ]]; then
+	if [[ "$pkg" = "" || "$1" == "--help" || "$1" == "-h" ]]; then
 	    err "Usage: $prog <package>\n\n    Remove <package> from repository."
 	    exit 1
 	fi
