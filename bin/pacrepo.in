@@ -20,8 +20,8 @@ msg() {
 	printf "$1\n"
 }
 
-if [[ -f /etc/pacrepo.conf ]]; then
-	. /etc/pacrepo.conf
+if [[ -f @sysconfdir@/pacrepo.conf ]]; then
+	. @sysconfdir@/pacrepo.conf
 fi
 
 REPO="${REPO-/srv/repo}"
