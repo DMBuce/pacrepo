@@ -1,0 +1,52 @@
+Pacrepo ReadMe
+==============
+
+Manage a custom pacman repository.
+
+Overview
+--------
+
+Pacrepo is used to add and remove packages from a custom pacman repository.
+
+Install
+-------
+
+Pacrepo can be installed from the AUR.
+
+Configure
+---------
+
+The config file is at +/etc/pacrepo.conf+. The most important option in this
+file is +CONFIG+, which defines a pacman configuration file which has your
+custom repository defined in it. This repo must be configured *last* in the
+file.
+
+You can define the following options within it:
+
+CONFIG::
+	The pacman configuration file which has your custom repository defined in
+	it. This repo must be configured *last* in the file.
+
+HOST:: 
+	The host that repository lives on. In most cases, this will be the
+	host in the +Server+ portion of the repository defined in +CONFIG+.
+
+REPO::
+	The path to the repository on +HOST+.
+
+If +HOST+ is left blank, pacrepo will assume the repository lives on the local
+host and copy files directly to the +REPO+ directory. Otherwise, it will use
+multiple invocations of `ssh` and `scp` to manipulate the repository, so you
+will probably want to use something like ssh-agent or GSSAPI authentication to
+avoid entering your password multiple times.
+
+Documentation
+-------------
+Basic documentation can be found in these files:
+
+* LICENSE - Terms and conditions
+* README  - This document
+
+/////
+vim: set syntax=asciidoc ts=4 sw=4 noet:
+/////
