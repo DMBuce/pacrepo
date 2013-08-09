@@ -40,7 +40,7 @@ add_pkg() {
 		# add package to the repo
 		msg "Adding $file to repo..."
 		cp -v -- "$file" "$REPO/"
-		repo-add -- "$db" "$REPO/$(basename "$file")"
+		repo-add "$db" "$REPO/$(basename "$file")"
 	else
 		# remove old versions of the package
 		ssh -- "$HOST" rm -vf -- $REPO/$pkg-*.pkg.tar.xz
@@ -48,7 +48,7 @@ add_pkg() {
 		# add package to the repo
 		msg "Adding $file to repo..."
 		scp -- "$file" "$HOST:$REPO/"
-		ssh -- "$HOST" repo-add -- "$db" "$REPO/$(basename "$file")"
+		ssh -- "$HOST" repo-add "$db" "$REPO/$(basename "$file")"
 
 	fi
 
@@ -65,11 +65,11 @@ rm_pkg() {
 		# remove all versions of the package
 		rm -vf -- $files
 		# add package to the repo
-		repo-remove -- "$db" "$pkg"
+		repo-remove "$db" "$pkg"
 	else
 		# remove all versions of the package
 		# add package to the repo
-		ssh -- "$HOST" "rm -vf -- $files; repo-remove -- \"$db\" \"$pkg\""
+		ssh -- "$HOST" "rm -vf -- $files; repo-remove \"$db\" \"$pkg\""
 	fi
 }
 
