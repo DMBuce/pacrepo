@@ -1,16 +1,5 @@
 #!/bin/bash -e
-#
-# Assumptions:
-#    1. REPO is a directory that exists and is writeable
-#    2. REPO is configured in pacman with its own separate CONFIG file
-#    3. (Optional) CONFIG is Include'd from pacman.conf
-#
-# Example CONFIG file:
-#
-# [build]
-# SigLevel = Optional TrustAll
-# Server = file:///data/repo
-#
+# add or remove a package to or from a custom repository
 
 err() {
 	printf -- "$1\n" >&2
