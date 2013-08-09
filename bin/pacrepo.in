@@ -96,7 +96,7 @@ reponames=( $(sed -nr "/^$sec_pre.*$sec_post$/ s/^$sec_pre|$sec_post$//gp" "$CON
 
 prog="$(basename "$0")"
 file="$1"
-repo="${2-${reponames[${#reponames}]}}" # use last configured repo if none given
+repo="${2-${reponames[${#reponames[@]}-1]}}" # use last configured repo if none given
 pkg="$(basename "${file%-*-*-*.pkg.tar.xz}")"
 files="$REPO/$pkg"-*.pkg.*
 db="$REPO/$repo.db.tar.gz"
