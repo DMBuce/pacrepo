@@ -67,7 +67,7 @@ if [[ -f @sysconfdir@/pacrepo.conf ]]; then
 fi
 
 REPO="${REPO-/srv/repo}"
-CONFIG="${CONFIG-"@sysconfdir@/pacman.d/build.repo"}"
+CONFIG="${CONFIG-"@sysconfdir@/pacman.conf"}"
 
 sec_pre='[[:space:]]*\['
 sec_post='\][[:space:]]*'
