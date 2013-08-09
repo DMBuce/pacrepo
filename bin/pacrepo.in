@@ -78,6 +78,8 @@ pacrepo() {
 	# update packages from that repo
 	if [[ "${#reponames[@]}" == 0 ]]; then
 		pacman -Syu --config="$CONFIG"
+	else
+		msg "Refusing to sync and update from multiple repositories."
 	fi
 }
 
