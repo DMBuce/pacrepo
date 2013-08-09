@@ -20,30 +20,6 @@ msg() {
 	printf "$1\n"
 }
 
-if [[ -f @sysconfdir@/pacrepo.conf ]]; then
-	. @sysconfdir@/pacrepo.conf
-fi
-
-REPO="${REPO-/srv/repo}"
-CONFIG="${CONFIG-"@sysconfdir@/pacman.d/build.repo"}"
-
-sec_pre='[[:space:]]*\['
-sec_post='\][[:space:]]*'
-reponames=( $(sed -nr "/^$sec_pre.*$sec_post$/ s/^$sec_pre|$sec_post$//gp" "$CONFIG") )
-
-prog="$(basename "$0")"
-file="$1"
-repo="${2-${reponames[${#reponames}]}}" # use last configured repo if none given
-pkg="$(basename "${file%-*-*-*.pkg.tar.xz}")"
-files="$REPO/$pkg"-*.pkg.*
-db="$REPO/$repo.db.tar.gz"
-
-# make sure a valid repo is configured
-if [[ "$repo" = "" ]]; then
-	err "No valid repo found"
-	exit 1
-fi
-
 add_pkg() {
 	# check for proper arguments
 	if [[ "$file" = ""  ]]; then
@@ -104,6 +80,30 @@ pacrepo() {
 		pacman -Syu --config="$CONFIG"
 	fi
 }
+
+if [[ -f @sysconfdir@/pacrepo.conf ]]; then
+	. @sysconfdir@/pacrepo.conf
+fi
+
+REPO="${REPO-/srv/repo}"
+CONFIG="${CONFIG-"@sysconfdir@/pacman.d/build.repo"}"
+
+sec_pre='[[:space:]]*\['
+sec_post='\][[:space:]]*'
+reponames=( $(sed -nr "/^$sec_pre.*$sec_post$/ s/^$sec_pre|$sec_post$//gp" "$CONFIG") )
+
+prog="$(basename "$0")"
+file="$1"
+repo="${2-${reponames[${#reponames}]}}" # use last configured repo if none given
+pkg="$(basename "${file%-*-*-*.pkg.tar.xz}")"
+files="$REPO/$pkg"-*.pkg.*
+db="$REPO/$repo.db.tar.gz"
+
+# make sure a valid repo is configured
+if [[ "$repo" = "" ]]; then
+	err "No valid repo found"
+	exit 1
+fi
 
 case "$prog" in
   addpkg) add_pkg ;;
