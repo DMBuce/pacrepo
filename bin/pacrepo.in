@@ -98,8 +98,8 @@ if [[ "$repo" = "" ]]; then
 fi
 
 case "$prog" in
-  addpkg) add_pkg ;;
-  rmpkg)  rm_pkg ;;
+  addpkg) add_pkg "$@" ;;
+  rmpkg)  rm_pkg "$@" ;;
   *)      pacman "$@" --config="$CONFIG" ;;
 esac
 
