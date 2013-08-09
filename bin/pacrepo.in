@@ -33,7 +33,7 @@ reponames=( $(sed -nr "/^$sec_pre.*$sec_post$/ s/^$sec_pre|$sec_post$//gp" "$CON
 
 prog="$(basename "$0")"
 file="$1"
-repo="${2-${reponames[0]}}"
+repo="${2-${reponames[${#reponames}]}}" # use last configured repo if none given
 pkg="$(basename "${file%-*-*-*.pkg.tar.xz}")"
 files="$REPO/$pkg"-*.pkg.*
 db="$REPO/$repo.db.tar.gz"
@@ -103,9 +103,17 @@ rm_pkg() {
 	fi
 }
 
+pacrepo() {
+	# if the config file has only a single repo,
+	# update packages from that repo
+	if [[ "${#reponames[@]}" == 0 ]]; then
+		pacman -Syu --config="$CONFIG"
+	fi
+}
+
 case "$prog" in
   addpkg) add_pkg ;;
   rmpkg)  rm_pkg ;;
-  *)      pacman -Sy --config="$CONFIG" ;;
+  *)      pacrepo ;;
 esac
 
