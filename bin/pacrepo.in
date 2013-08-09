@@ -44,12 +44,6 @@ if [[ "$repo" = "" ]]; then
 	exit 1
 fi
 
-## check for root
-#if [ "$(whoami)" != root ]; then
-#	err "You must be root to run this"
-#	exit 1
-#fi
-
 add_pkg() {
 	# check for proper arguments
 	if [[ "$file" = ""  ]]; then
@@ -62,11 +56,11 @@ add_pkg() {
 		err "$file has an invalid package extension"
 		exit 1
 	fi
-	
+
 	if [[ "$HOST" == "" ]]; then
 		# remove old versions of the package
 		rm -vf $REPO/$pkg-*.pkg.tar.xz
-		
+
 		# add package to the repo
 		msg "Adding $file to repo..."
 		cp -v "$file" "$REPO/"
@@ -74,7 +68,7 @@ add_pkg() {
 	else
 		# remove old versions of the package
 		ssh "$HOST" rm -vf $REPO/$pkg-*.pkg.tar.xz
-		
+
 		# add package to the repo
 		msg "Adding $file to repo..."
 		scp "$file" "$HOST:$REPO/"
@@ -90,7 +84,7 @@ rm_pkg() {
 	    err "Usage: $prog <package>\n\n    Remove <package> from repository."
 	    exit 1
 	fi
-	
+
 	if [[ "$HOST" == "" ]]; then
 		# remove all versions of the package
 		rm -vf $files
