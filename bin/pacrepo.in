@@ -73,16 +73,6 @@ rm_pkg() {
 	fi
 }
 
-pacrepo() {
-	# if the config file has only a single repo,
-	# update packages from that repo
-	if [[ "${#reponames[@]}" == 1 ]]; then
-		pacman -Syu --config="$CONFIG"
-	else
-		msg "Refusing to sync and update from multiple repositories."
-	fi
-}
-
 if [[ -f @sysconfdir@/pacrepo.conf ]]; then
 	. @sysconfdir@/pacrepo.conf
 fi
@@ -110,6 +100,6 @@ fi
 case "$prog" in
   addpkg) add_pkg ;;
   rmpkg)  rm_pkg ;;
-  *)      pacrepo ;;
+  *)      pacman "$@" --config="$CONFIG" ;;
 esac
 
