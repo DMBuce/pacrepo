@@ -1,24 +1,26 @@
 #!/bin/bash -e
 # add or remove a package to or from a custom repository
 
-err() {
-	printf -- "$1\n" >&2
+msg() {
+	message="$1"
+	shift
+	printf -- "$messge\n" "$@" >&2
 }
 
-msg() {
-	printf -- "$1\n"
+err() {
+	msg "$@" >&2
 }
 
 add_pkg() {
 	# check for proper arguments
 	if [[ "$file" = "" || "$1" == "--help" || "$1" == "-h" ]]; then
-	    err "Usage: $prog <package>\n\n    Add <package> to repository.\n"
+	    err "Usage: %s <package>\n\n    Add <package> to repository.\n" "$prog"
 	    exit 1
 	elif [[ ! -f "$file" ]]; then
-		err "$file is not a valid file"
+		err "%s is not a valid file" "$file"
 		exit 1
 	elif [[ "$file" = $pkg ]]; then
-		err "$file has an invalid package extension"
+		err "%s has an invalid package extension" "$file"
 		exit 1
 	fi
 
@@ -27,7 +29,7 @@ add_pkg() {
 		rm -vf -- $REPO/$pkg-*.pkg.tar.xz
 
 		# add package to the repo
-		msg "Adding $file to repo..."
+		msg "Adding %s to repo..." "$file"
 		cp -v -- "$file" "$REPO/"
 		repo-add "$db" "$REPO/$(basename "$file")"
 	else
@@ -35,7 +37,7 @@ add_pkg() {
 		ssh -- "$HOST" rm -vf -- $REPO/$pkg-*.pkg.tar.xz
 
 		# add package to the repo
-		msg "Adding $file to repo..."
+		msg "Adding %s to repo..." "$file"
 		scp -- "$file" "$HOST:$REPO/"
 		ssh -- "$HOST" repo-add "$db" "$REPO/$(basename "$file")"
 
@@ -46,7 +48,7 @@ add_pkg() {
 rm_pkg() {
 	# check for proper arguments
 	if [[ "$pkg" = "" || "$1" == "--help" || "$1" == "-h" ]]; then
-	    err "Usage: $prog <package>\n\n    Remove <package> from repository.\n"
+	    err "Usage: %s <package>\n\n    Remove <package> from repository.\n" "$prog"
 	    exit 1
 	fi
 
