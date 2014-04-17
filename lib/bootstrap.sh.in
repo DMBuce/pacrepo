@@ -1,0 +1,21 @@
+
+msg() {
+	message="$1"
+	shift
+	printf -- "$message\n" "$@" >&2
+}
+
+err() {
+	msg "$@" >&2
+}
+
+conf="@sysconfdir@/parcman.conf"
+if [[ -f "$conf" ]]; then
+	. "$conf"
+fi
+
+# set defaults
+(( "${#REPOS[@]}" )) || REPOS=()
+REPO="${REPO-custom}"
+CONFIG="${CONFIG-/etc/pacman.conf}"
+

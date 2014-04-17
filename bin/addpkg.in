@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Usage: addpkg <file> [repo]
+#
+
+. @libexecdir@/parcman/bootstrap.sh
+
+# needed for $PKGEXT
+if [[ -f "@sysconfdir@/makepkg.conf" ]]; then
+	. "@sysconfdir@/makepkg.conf" 
+fi
+
+file="$1"
+repo="${2-$REPO}"
+
+repopath=
+repohost=
+for r in "${REPOS[@]}"; do
+	if [[ "$r" == "$repo="* ]]; then
+		r="${r#$repo=}"
+		repopath="${r#*:}"
+		repohost="${r%$repopath}"
+		repohost="${repohost%:}"
+	fi
+done
+
+# validate config and arguments
+if [[ -z "$repo" || -z "$repopath" ]]; then
+	err "Repo %s not found in %s: %s" "$repo" "REPOS" "$conf"
+	exit 1
+elif [[ -z "$file" || "$1" == "--help" || "$1" == "-h" ]]; then
+    err "Usage: addpkg <file>\n\n    Add <file> to repository.\n" "$prog"
+    exit 1
+elif [[ ! -f "$file" ]]; then
+	err "File not found: %s" "$file"
+	exit 1
+elif [[ "$file" != *$PKGEXT ]]; then
+	err "Invalid package extension: %s" "$file"
+	exit 1
+fi
+
+# add package
+pkg="$(basename -- "${file%-*-*-*$PKGEXT}")"
+db="$repopath/$repo.db.tar.gz"
+if [[ -z "$repohost" ]]; then
+	# remove old versions of the package
+	#rm -vf -- "$repopath/$pkg"-*"$PKGEXT"
+	find "$repopath" -type f -regex ".*/$pkg-[^-]+-[^-]+-[^-]+$PKGEXT" \
+		-delete -exec printf "removed %s\n" {} \;
+
+	# add package to the repo
+	msg "Adding %s to %s..." "$file" "$repo"
+	cp -v -- "$file" "$repopath/" \
+		&& repo-add "$db" "$repopath/${file##*/}"
+else
+	# remove old versions of the package
+	#if ! ssh -- "$repohost" "rm -vf -- \"$repopath/$pkg\"-*\"$PKGEXT\""; then
+	if ! ssh -- "$repohost" \
+		"find \"$repopath\" -type f -regex \".*/$pkg-[^-]+-[^-]+-[^-]+$PKGEXT\" -delete -exec printf \"removed %s\n\" {} \;"
+	then
+		exit $?
+	fi
+
+	# add package to the repo
+	msg "Adding %s to %s..." "$file" "$repo"
+	scp -- "$file" "$repohost:$repopath/" \
+		&& ssh -- "$repohost" "repo-add \"$db\" \"$repopath/${file##*/}\""
+fi
+

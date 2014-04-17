@@ -1,44 +1,56 @@
-Pacrepo ReadMe
+Parcman ReadMe
 ==============
 
-Manage a custom pacman repository.
+Collection of pacman-related tools.
 
 Overview
 --------
 
-Pacrepo is used to add and remove packages from a custom pacman repository.
+Parcman is a bunch of ass-backwards shell crap wrapping pacman. Backwards crap
+is "parc". Parc-man. Get it?
+
+The project includes the following tools:
+
+* pacrepo: Run pacman against a single repo
+* addpkg: Add a package to a repo
+* rmpkg: Remove a package from a repo
+* mirrorlist: Update your mirrorlist using reflector
 
 Install
 -------
 
-Pacrepo can be installed from the AUR.
+Parcman can be installed from the AUR.
 
 Configure
 ---------
 
-The config file is at +/etc/pacrepo.conf+. The most important option in this
-file is +CONFIG+, which defines a pacman configuration file which has your
-custom repository defined in it. This repo must be configured *last* in the
-file.
+The config file is at +/etc/parcman.conf+. You can define the following
+options within it:
 
-You can define the following options within it:
-
-CONFIG::
-	The pacman configuration file which has your custom repository defined in
-	it. This repo must be configured *last* in the file.
-
-HOST:: 
-	The host that repository lives on. In most cases, this will be the
-	host in the +Server+ portion of the repository defined in +CONFIG+.
-
-REPO::
-	The path to the repository on +HOST+.
-
-If +HOST+ is left blank, pacrepo will assume the repository lives on the local
-host and copy files directly to the +REPO+ directory. Otherwise, it will use
+**REPOS**=(name=[host:]/path ...)::
+	A list of repositories for +addpkg+ and +rmpkg+ to manage. 'name' is the
+	name of the repository in +CONFIG+, '/path' is the full path to the
+	repository on the filesystem, and 'host' (optional) is the ip address or
+	host name of the system the repository lives on.
++
+When a repository is configured with a 'host', +addpkg+ and +rmpkg+ will use
 multiple invocations of `ssh` and `scp` to manipulate the repository, so you
 will probably want to use something like ssh-agent or GSSAPI authentication to
 avoid entering your password multiple times.
++
+Default: +REPOS=()+
+
+**REPO**=repo::
+	The repository that +addpkg+, +rmpkg+, and +pacrepo+ should use by
+	default.
++
+Default: +REPO=custom+
+
+**CONFIG**=/path/to/pacman.conf::
+	The path to the configuration file containing the options and repositories
+	that +pacrepo+ should use.
++
+Default: +CONFIG=/etc/pacman.conf+
 
 Documentation
 -------------

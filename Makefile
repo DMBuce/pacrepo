@@ -43,22 +43,24 @@ INSTALL_DATA    = ${INSTALL} -m 644
 LN_S        = ln -s
 SED_INPLACE = sed -i
 
-PACKAGE   = pacrepo
-PROG      = pacrepo
+PACKAGE   = parcman
+#PROG      = pacrepo
 #VERSION   = 0.0.0
-BUGREPORT = https://github.com/DMBuce/pacrepo/issues
-URL       = https://github.com/DMBuce/pacrepo
+BUGREPORT = https://github.com/DMBuce/parcman/issues
+URL       = https://github.com/DMBuce/parcman
 
-BINFILES         = bin/$(PROG)
-ETCFILES         = etc/$(PROG).conf
-CLEANFILES       = bin/$(PROG)
+BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg
+ETCFILES         = etc/parcman.conf
+EXECFILES        = lib/bootstrap.sh
+CLEANFILES       = $(BINFILES)
 
-INSTALL_FILES    = $(DESTDIR)$(bindir)/$(PROG) $(DESTDIR)$(bindir)/addpkg \
-                   $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(sysconfdir)/$(PROG).conf
-INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir)
+INSTALL_FILES    = $(DESTDIR)$(bindir)/pacrepo $(DESTDIR)$(bindir)/addpkg \
+                   $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(sysconfdir)/parcman.conf \
+                   $(DESTDIR)$(libexecdir)/parcman/bootstrap.sh
+INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir) $(DESTDIR)$(libexecdir)/parcman
 
 .PHONY: all
-all: $(BINFILES) $(ETCFILES)
+all: $(BINFILES) $(ETCFILES) $(EXECFILES)
 
 .PHONY: clean
 clean:
@@ -77,20 +79,23 @@ installdirs: $(INSTALL_DIRS)
 $(INSTALL_DIRS):
 	$(INSTALL) -d $@
 
-$(DESTDIR)$(sysconfdir)/$(PROG).conf: etc/$(PROG).conf
+$(DESTDIR)$(libexecdir)/parcman/bootstrap.sh: lib/bootstrap.sh
 	$(INSTALL) $< $@
 
-$(DESTDIR)$(bindir)/addpkg:
-	$(LN_S) $(PROG) $@
+$(DESTDIR)$(sysconfdir)/parcman.conf: etc/parcman.conf
+	$(INSTALL) $< $@
 
-$(DESTDIR)$(bindir)/rmpkg:
-	$(LN_S) $(PROG) $@
-
-$(DESTDIR)$(bindir)/$(PROG): bin/$(PROG)
+$(DESTDIR)$(bindir)/%: bin/%
 	$(INSTALL_PROGRAM) $< $@
 
-bin/$(PROG): bin/$(PROG).in
+bin/%: bin/%.in
 	cp $< $@
 	$(SED_INPLACE) 's?@sysconfdir@?$(sysconfdir)?g'   $@
+	$(SED_INPLACE) 's?@libexecdir@?$(libexecdir)?g'   $@
+
+lib/%: lib/%.in
+	cp $< $@
+	$(SED_INPLACE) 's?@sysconfdir@?$(sysconfdir)?g'   $@
+	$(SED_INPLACE) 's?@libexecdir@?$(libexecdir)?g'   $@
 
 # vim: set ft=make:

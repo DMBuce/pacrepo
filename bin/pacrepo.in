@@ -1,15 +1,51 @@
 #!/bin/bash
-# add or remove a package to or from a custom repository
+#
+# Usage: pacrepo [repo] <pacman args>
+#
 
-msg() {
-	message="$1"
+. @libexecdir@/parcman/bootstrap.sh
+
+config="$CONFIG"
+if [[ ! -r "$config" ]]; then
+	err "Could not read config file %s" "$config"
+	exit 1
+elif egrep -q "^[[:space:]]*\[$1\][[:space:]]*$" "$config"; then
+	repo="$1"
 	shift
-	printf -- "$message\n" "$@" >&2
+elif egrep -q "^[[:space:]]*\[$REPO\][[:space:]]*$" "$config"; then
+	repo="$REPO"
+else
+	err "Repo not found on command line or in %s" "$config"
+	exit 1
+fi
+
+parse_config() {
+	local repo config
+	repo="$1"
+	config="$2"
+
+	# extract repo from config
+	awk '
+		BEGIN { p = 0 }
+		$1 != "['"$repo"']" && $1 != "[options]" \
+			&& /^[[:space:]]*\[[^]]*\][[:space:]]*$/ { p = 0 }
+		$1 == "['"$repo"']" || $1 == "[options]"     { p = 1 }
+		p == 1 { print }
+	' "$config"
 }
 
-err() {
-	msg "$@" >&2
-}
+tmpconfig="$(mktemp --tmpdir "pacconfig-${config##*/}.XXXXXX")" \
+	|| exit 1
+trap 'rm -f "$tmpconfig"' EXIT
+
+parse_config "$repo" "$config" > "$tmpconfig"
+
+pacman "$@" --config="$tmpconfig"
+
+exit $?
+
+#!/bin/bash
+# add or remove a package to or from a custom repository
 
 add_pkg() {
 	# check for proper arguments
