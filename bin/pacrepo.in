@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 # add or remove a package to or from a custom repository
 
 msg() {
@@ -30,16 +30,16 @@ add_pkg() {
 
 		# add package to the repo
 		msg "Adding %s to repo..." "$file"
-		cp -v -- "$file" "$REPO/"
-		repo-add "$db" "$REPO/$(basename "$file")"
+		cp -v -- "$file" "$REPO/" \
+			&& repo-add "$db" "$REPO/$(basename "$file")"
 	else
 		# remove old versions of the package
-		ssh -- "$HOST" rm -vf -- $REPO/$pkg-*.pkg.tar.xz
+		ssh -- "$HOST" rm -vf -- $REPO/$pkg-*.pkg.tar.xz || exit $?
 
 		# add package to the repo
 		msg "Adding %s to repo..." "$file"
-		scp -- "$file" "$HOST:$REPO/"
-		ssh -- "$HOST" repo-add "$db" "$REPO/$(basename "$file")"
+		scp -- "$file" "$HOST:$REPO/" \
+			&& ssh -- "$HOST" repo-add "$db" "$REPO/$(basename "$file")"
 
 	fi
 
