@@ -1,17 +1,16 @@
 #!/bin/bash
-# patches config files after pacman update
+#
+# Usage: pacpatch <file>
+#
+
+. @libexecdir@/parcman/bootstrap.sh
 
 set -e
 
 FILE="$1"
 
-die () {
-	echo "$1" >&2
-	exit 1
-}
-
 usage() {
-	echo "Usage: $(basename $0) <file>
+	msg "Usage: $(basename $0) <file>
 
     Attempts to patch pacnew <file>, falling back to vimdiff on failure.
 "
@@ -22,30 +21,38 @@ case "$1" in ""|"-h"|"--help")
 	exit
 esac
 
-[[ -f "$FILE.pacnew" ]] || die "$FILE.pacnew does not exist"
+if [[ ! -f "$FILE.pacnew" ]]; then
+	err "File does not exist: %s" "$FILE.pacnew"
+	exit 1
+fi
 
 if [[ ! -f "$FILE.orig" ]]; then
-	echo "$FILE.orig does not exist, falling back to vimdiff"
+	msg "File does not exist: %s" "$FILE.orig"
+	msg "Falling back to vimdiff"
 	sleep 1
 	vimdiff "$FILE"{,.pacnew}
 	mv -iv "$FILE.pacnew" "$FILE.orig"
 	exit $?
 fi
 
-[[ -f "$FILE.patch" ]] && die "$FILE.patch exists, not overwriting"
+if [[ -f "$FILE.patch" ]]; then
+	err "Refusing to overwrite file: %s" "$FILE.patch"
+	exit 1
+fi
 if diff -u "$FILE".{orig,pacnew} > "$FILE.patch"; then
 	rm "$FILE.patch"
-	die "$FILE.pacnew and $FILE.orig are identical"
+	err "%s and %s are identical" "$FILE.pacnew" "$FILE.orig"
+	exit 1
 fi
 
 sed -i "s|$FILE.pacnew|$FILE|" "$FILE.patch"
 
 if patch -p0 < "$FILE.patch"; then
-	echo "Patch successful, cleaning up"
+	msg "Patch successful, cleaning up"
 	mv -v "$FILE.pacnew" "$FILE.orig"
 	rm -v "$FILE.patch"
 else
-	echo "Patch failed, falling back to vimdiff"
+	msg "Patch failed, falling back to vimdiff"
 	sleep 1
 	vimdiff "$FILE"{,.pacnew}
 	mv -iv "$FILE.pacnew" "$FILE.orig"
