@@ -49,14 +49,14 @@ PACKAGE   = parcman
 BUGREPORT = https://github.com/DMBuce/parcman/issues
 URL       = https://github.com/DMBuce/parcman
 
-BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg
+BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg bin/mirrorlist
 ETCFILES         = etc/parcman.conf
 EXECFILES        = lib/bootstrap.sh
 CLEANFILES       = $(BINFILES)
 
 INSTALL_FILES    = $(DESTDIR)$(bindir)/pacrepo $(DESTDIR)$(bindir)/addpkg \
-                   $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(sysconfdir)/parcman.conf \
-                   $(DESTDIR)$(libexecdir)/parcman/bootstrap.sh
+                   $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(bindir)/mirrorlist \
+                   $(DESTDIR)$(sysconfdir)/parcman.conf $(DESTDIR)$(libexecdir)/parcman/bootstrap.sh
 INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir) $(DESTDIR)$(libexecdir)/parcman
 
 .PHONY: all

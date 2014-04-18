@@ -1,6 +1,6 @@
 
 msg() {
-	message="$1"
+	local message="$1"
 	shift
 	printf -- "$message\n" "$@" >&2
 }
@@ -18,4 +18,11 @@ fi
 (( "${#REPOS[@]}" )) || REPOS=()
 REPO="${REPO-custom}"
 CONFIG="${CONFIG-/etc/pacman.conf}"
+MIRRORLIST="${MIRRORLIST-/etc/pacman.d/mirrorlist}"
+REGION="${REGION-United States}"
+FRESHNESS="${FRESHNESS-36}"
+SORT="${SORT-score}"
+(( "${#REFLECTOR_OPTS[@]}" )) || REFLECTOR_OPTS=()
+(( "${#PREPEND_SERVERS[@]}" )) || PREPEND_SERVERS=()
+(( "${#APPEND_SERVERS[@]}" )) || APPEND_SERVERS=()
 

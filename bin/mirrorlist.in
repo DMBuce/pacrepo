@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# Usage: mirrorlist
+#
+
+. @libexecdir@/parcman/bootstrap.sh
+
+# appends an option to reflopts
+reflopt() {
+	opt="$1"
+	arg="$2"
+
+	if [[ "$opt" != -* ]]; then
+		# something went wrong, this shouldn't happen
+		err "Poorly formatted option: %s" "$opt"
+		exit 1
+	elif [[ -n "$arg" ]]; then
+		reflopts+=("$opt" "$arg")
+	fi
+}
+
+# construct reflector options
+reflopts=()
+reflopt --country "$REGION"
+reflopt --age "$FRESHNESS"
+reflopt --sort "$SORT"
+reflopts+=("${REFLECTOR_OPTS[@]}")
+
+# open a file descriptor for reflector's output
+if [[ -z "$MIRRORLIST" || "$MIRRORLIST" == - ]]; then
+	exec 3>&1
+else
+	exec 3> "$MIRRORLIST"
+fi
+
+# create the mirrorlist
+{
+	printf '# servers prepended to reflector output by mirrorlist\n'
+	(( "${#PREPEND_SERVERS[@]}" )) && \
+		printf 'Server = %s\n' "${PREPEND_SERVERS[@]}"
+	printf '\n'
+	reflector "${reflopts[@]}"
+	printf '# servers appended to reflector output by mirrorlist\n'
+	(( "${#APPEND_SERVERS[@]}" )) && \
+		printf 'Server = %s\n' "${APPEND_SERVERS[@]}"
+} >&3
+

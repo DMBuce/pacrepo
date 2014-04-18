@@ -27,7 +27,7 @@ Configure
 The config file is at +/etc/parcman.conf+. You can define the following
 options within it:
 
-**REPOS**=(name=[host:]/path ...)::
+**REPOS**=( name=[host:]/path ... )::
 	A list of repositories for +addpkg+ and +rmpkg+ to manage. 'name' is the
 	name of the repository in +CONFIG+, '/path' is the full path to the
 	repository on the filesystem, and 'host' (optional) is the ip address or
@@ -40,7 +40,7 @@ avoid entering your password multiple times.
 +
 Default: +REPOS=()+
 
-**REPO**=repo::
+**REPO**=<repo>::
 	The repository that +addpkg+, +rmpkg+, and +pacrepo+ should use by
 	default.
 +
@@ -51,6 +51,44 @@ Default: +REPO=custom+
 	that +pacrepo+ should use.
 +
 Default: +CONFIG=/etc/pacman.conf+
+
+**MIRRORLIST**=/path/to/mirrorlist::
+	The path to the mirrorlist that +mirrorlist+ should write to. Leave blank
+	to write to stdout.
++
+Default: +MIRRORLIST=/etc/pacman.d/mirrorlist+
+
+**REGION**=<region>::
+	The region to restrict mirrors to. Passed to reflector's +--country+
+	options.
++
+Default: +REGION='United States'+
+
+**FRESHNESS**=<hours>::
+	Max age of mirrors. Passed to reflector's +--age+ option.
++
+Default: +FRESHNESS=36+
+
+**SORT**=<order>::
+	The order mirrors should be sorted in. Passed to reflector's +--sort+
+	option.
++
+Default: +SORT=score+
+
+**REFLECTOR_OPTS**=( <option> ... )::
+	A list of additional options to pass to reflector.
++
+Default: +REFLECTOR_OPTS=()+
+
+**PREPEND_SERVERS**=( <server> ... )::
+	Additional servers to prepend to the mirrorlist.
++
+Default: +PREPEND_SERVERS=()+
+
+**APPEND_SERVERS**=( <server> ... )::
+	Additional servers to append to the mirrorlist.
++
+Default: +APPEND_SERVERS=()+
 
 Documentation
 -------------
