@@ -7,7 +7,7 @@
 
 # needed for $PKGEXT
 if [[ -f "@sysconfdir@/makepkg.conf" ]]; then
-	. "@sysconfdir@/makepkg.conf" 
+	. "@sysconfdir@/makepkg.conf"
 fi
 
 file="$1"
