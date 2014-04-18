@@ -15,6 +15,7 @@ The project includes the following tools:
 * addpkg: Add a package to a repo
 * rmpkg: Remove a package from a repo
 * mirrorlist: Update your mirrorlist using reflector
+* pacpatch: Patches config files after pacman update
 
 Install
 -------
