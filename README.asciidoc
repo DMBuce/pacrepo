@@ -61,23 +61,23 @@ Default: +MIRRORLIST=/etc/pacman.d/mirrorlist+
 
 **REGION**=<region>::
 	The region to restrict mirrors to. Passed to reflector's +--country+
-	options.
+	options when running +mirrorlist+.
 +
 Default: +REGION='United States'+
 
 **FRESHNESS**=<hours>::
-	Max age of mirrors. Passed to reflector's +--age+ option.
+	Max age of mirrors. Passed to reflector's +--age+ option when running +mirrorlist+.
 +
 Default: +FRESHNESS=36+
 
 **SORT**=<order>::
 	The order mirrors should be sorted in. Passed to reflector's +--sort+
-	option.
+	option when running +mirrorlist+.
 +
 Default: +SORT=score+
 
 **REFLECTOR_OPTS**=( <option> ... )::
-	A list of additional options to pass to reflector.
+	A list of additional options to pass to reflector when running +mirrorlist+.
 +
 Default: +REFLECTOR_OPTS=()+
 
