@@ -3,7 +3,7 @@
 # Usage: mirrorlist
 #
 
-. @libexecdir@/parcman/bootstrap.sh
+. @libexecdir@/pacrepo/bootstrap.sh
 
 # appends an option to reflopts
 reflopt() {

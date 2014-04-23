@@ -9,7 +9,7 @@ err() {
 	msg "$@" >&2
 }
 
-conf="@sysconfdir@/parcman.conf"
+conf="@sysconfdir@/pacrepo.conf"
 if [[ -f "$conf" ]]; then
 	. "$conf"
 fi

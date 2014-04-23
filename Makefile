@@ -43,22 +43,22 @@ INSTALL_DATA    = ${INSTALL} -m 644
 LN_S        = ln -s
 SED_INPLACE = sed -i
 
-PACKAGE   = parcman
+PACKAGE   = pacrepo
 #PROG      = pacrepo
 #VERSION   = 0.0.0
-BUGREPORT = https://github.com/DMBuce/parcman/issues
-URL       = https://github.com/DMBuce/parcman
+BUGREPORT = https://github.com/DMBuce/pacrepo/issues
+URL       = https://github.com/DMBuce/pacrepo
 
 BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg bin/mirrorlist bin/pacpatch
-ETCFILES         = etc/parcman.conf
+ETCFILES         = etc/pacrepo.conf
 EXECFILES        = lib/bootstrap.sh
 CLEANFILES       = $(BINFILES)
 
 INSTALL_FILES    = $(DESTDIR)$(bindir)/pacrepo $(DESTDIR)$(bindir)/addpkg \
                    $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(bindir)/mirrorlist \
                    $(DESTDIR)$(bindir)/pacpatch \
-                   $(DESTDIR)$(sysconfdir)/parcman.conf $(DESTDIR)$(libexecdir)/parcman/bootstrap.sh
-INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir) $(DESTDIR)$(libexecdir)/parcman
+                   $(DESTDIR)$(sysconfdir)/pacrepo.conf $(DESTDIR)$(libexecdir)/pacrepo/bootstrap.sh
+INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir) $(DESTDIR)$(libexecdir)/pacrepo
 
 .PHONY: all
 all: $(BINFILES) $(ETCFILES) $(EXECFILES)
@@ -80,10 +80,10 @@ installdirs: $(INSTALL_DIRS)
 $(INSTALL_DIRS):
 	$(INSTALL) -d $@
 
-$(DESTDIR)$(libexecdir)/parcman/bootstrap.sh: lib/bootstrap.sh
+$(DESTDIR)$(libexecdir)/pacrepo/bootstrap.sh: lib/bootstrap.sh
 	$(INSTALL) $< $@
 
-$(DESTDIR)$(sysconfdir)/parcman.conf: etc/parcman.conf
+$(DESTDIR)$(sysconfdir)/pacrepo.conf: etc/pacrepo.conf
 	$(INSTALL) $< $@
 
 $(DESTDIR)$(bindir)/%: bin/%

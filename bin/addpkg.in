@@ -3,7 +3,7 @@
 # Usage: addpkg <file> [repo]
 #
 
-. @libexecdir@/parcman/bootstrap.sh
+. @libexecdir@/pacrepo/bootstrap.sh
 
 # needed for $PKGEXT
 if [[ -f "@sysconfdir@/makepkg.conf" ]]; then

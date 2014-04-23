@@ -3,7 +3,7 @@
 # Usage: pacrepo [repo] <pacman args>
 #
 
-. @libexecdir@/parcman/bootstrap.sh
+. @libexecdir@/pacrepo/bootstrap.sh
 
 config="$CONFIG"
 if [[ ! -r "$config" ]]; then

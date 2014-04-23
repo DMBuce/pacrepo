@@ -1,4 +1,4 @@
-Parcman ReadMe
+Pacrepo ReadMe
 ==============
 
 Collection of pacman-related tools.
@@ -6,10 +6,7 @@ Collection of pacman-related tools.
 Overview
 --------
 
-Parcman is a bunch of ass-backwards shell crap wrapping pacman. Backwards crap
-is "parc". Parc-man. Get it?
-
-The project includes the following tools:
+This project includes the following tools:
 
 * pacrepo: Run pacman against a single repo
 * addpkg: Add a package to a repo
@@ -20,12 +17,12 @@ The project includes the following tools:
 Install
 -------
 
-Parcman can be installed from the AUR.
+Pacrepo can be installed from the AUR.
 
 Configure
 ---------
 
-The config file is at +/etc/parcman.conf+. You can define the following
+The config file is at +/etc/pacrepo.conf+. You can define the following
 options within it:
 
 **REPOS**=( name=[host:]/path ... )::
