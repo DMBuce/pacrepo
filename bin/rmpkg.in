@@ -15,14 +15,7 @@ repo="${2-$REPO}"
 
 repopath=
 repohost=
-for r in "${REPOS[@]}"; do
-	if [[ "$r" == "$repo="* ]]; then
-		r="${r#$repo=}"
-		repopath="${r#*:}"
-		repohost="${r%$repopath}"
-		repohost="${repohost%:}"
-	fi
-done
+read repopath repohost < <(printrepo "$repo")
 
 # validate config and arguments
 if [[ -z "$repo" || -z "$repopath" ]]; then

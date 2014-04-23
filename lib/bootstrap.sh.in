@@ -1,12 +1,35 @@
 
+# prints informational message
 msg() {
 	local message="$1"
 	shift
 	printf -- "$message\n" "$@" >&2
 }
 
+# prints error message
 err() {
 	msg "$@" >&2
+}
+
+# prints the path and host of a repo
+printrepo() {
+	local r repo="$1"
+	repopath=
+	repohost=
+	for r in "${REPOS[@]}"; do
+		if [[ "$r" == "$repo="* ]]; then
+			parserepo "${r#$repo=}"
+		fi
+	done
+}
+
+# parses the path and host of a repo
+parserepo() {
+	local r="$1"
+	repopath="${r#*:}"
+	repohost="${r%$repopath}"
+	repohost="${repohost%:}"
+	echo "$repopath" "$repohost"
 }
 
 conf="@sysconfdir@/pacrepo.conf"
