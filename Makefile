@@ -68,7 +68,9 @@ clean:
 	rm -f $(CLEANFILES)
 
 .PHONY: install
-install: all installdirs $(INSTALL_FILES)
+install: all $(INSTALL_FILES)
+
+$(INSTALL_FILES): installdirs
 
 .PHONY: uninstall
 uninstall:
