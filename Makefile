@@ -52,7 +52,7 @@ URL       = https://github.com/DMBuce/pacrepo
 BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg bin/mirrorlist bin/pacpatch
 ETCFILES         = etc/pacrepo.conf
 EXECFILES        = lib/bootstrap.sh
-CLEANFILES       = $(BINFILES)
+CLEANFILES       = $(BINFILES) $(EXECFILES)
 
 INSTALL_FILES    = $(DESTDIR)$(bindir)/pacrepo $(DESTDIR)$(bindir)/addpkg \
                    $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(bindir)/mirrorlist \
