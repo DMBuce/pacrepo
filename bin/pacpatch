@@ -1,0 +1,52 @@
+#!/bin/bash
+
+. pacrepo
+
+set -e
+
+file="$1"
+
+usage="Usage: $prog <file>
+
+    Attempts to patch pacnew <file>, falling back to vimdiff on failure.
+"
+
+case "$1" in ""|"-h"|"--help")
+	die "$usage"
+esac
+
+if [[ ! -f "$file.pacnew" ]]; then
+	die "File does not exist: %s" "$file.pacnew"
+fi
+
+if [[ ! -f "$file.orig" ]]; then
+	msg "File does not exist: %s" "$file.orig"
+	msg "Falling back to vimdiff"
+	sleep 1
+	vimdiff "$file"{,.pacnew}
+	mv -iv "$file.pacnew" "$file.orig"
+	exit $?
+fi
+
+if [[ -f "$file.patch" ]]; then
+	die "Refusing to overwrite file: %s" "$file.patch"
+fi
+if diff -u "$file".{orig,pacnew} > "$file.patch"; then
+	rm "$file.patch"
+	die "%s and %s are identical" "$file.pacnew" "$file.orig"
+fi
+
+sed -i "s|$file.pacnew|$file|" "$file.patch"
+
+if patch -p0 < "$file.patch"; then
+	msg "Patch successful, cleaning up"
+	mv -v "$file.pacnew" "$file.orig"
+	rm -v "$file.patch"
+else
+	msg "Patch failed, falling back to vimdiff"
+	sleep 1
+	vimdiff "$file"{,.pacnew}
+	mv -iv "$file.pacnew" "$file.orig"
+	rm -iv "$file.patch" "$file.rej"
+fi
+

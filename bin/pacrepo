@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# globals
+prog="${0##*/}"
+
+# source config
+conf="/etc/pacrepo.conf"
+declare -A REPOS
+if [[ -f "$conf" ]]; then
+	. "$conf"
+fi
+unset conf
+
+# set defaults
+(( "${#REPOS[@]}" )) || REPOS=()
+REPO="${REPO:-custom}"
+CONFIG="${CONFIG:-/etc/pacman.conf}"
+
+# prints informational message
+msg() {
+	local message="$1"
+	shift
+	printf -- "$message\n" "$@" >&2
+}
+
+# prints error message
+err() {
+	msg "$@" >&2
+}
+
+# prints error message and exits
+die() {
+	err "$@"
+	exit 1
+}
+
+# define $path and $host from config
+parserepo() {
+	local repo="$1"
+	path="${REPOS[$repo]}"
+	host="${path##:*}"
+	path="${path%*:}"
+}
+
+main() {
+	# define some vars
+	pacconf="$CONFIG"
+	usage="\
+Usage: $prog [repo] <pacman-args>
+
+    Run pacman against a single <repo>.
+"
+
+	# parse args
+	if [[ "$*" == *--help* ]]; then
+		die "$usage"
+	elif [[ ! -r "$pacconf" ]]; then
+		die "Can't read config: %s" "$pacconf"
+	elif egrep -q "^[[:space:]]*\[$1\][[:space:]]*$" "$pacconf"; then
+		repo="$1"
+		shift
+	elif egrep -q "^[[:space:]]*\[$REPO\][[:space:]]*$" "$pacconf"; then
+		repo="$REPO"
+	else
+		die "Repo not found in config: %s" "$pacconf"
+	fi
+
+	# create temporary modified config
+	tmpfile="$(mktemp --tmpdir "pacrepo-${pacconf##*/}.XXXXXX")" || exit 1
+	trap 'rm -f "$tmpfile"' EXIT
+	awk '
+		BEGIN { p = 0 }
+		$1 != "['"$repo"']" && $1 != "[options]" \
+			&& /^[[:space:]]*\[[^]]*\][[:space:]]*$/ { p = 0 }
+		$1 == "['"$repo"']" || $1 == "[options]"     { p = 1 }
+		p == 1 { print }
+	' "$pacconf" > "$tmpfile"
+
+	# run pacman with modified config
+	pacman "$@" --config="$tmpfile"
+}
+
+# run program if this script wasn't sourced
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	main "$@"
+fi
+

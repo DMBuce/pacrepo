@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# read config and define useful vars
+. pacrepo
+
+# needed for $PKGEXT
+if [[ -f /etc/makepkg.conf ]]; then
+	. /etc/makepkg.conf
+fi
+
+# parse args
+file="$1"
+repo="${2-$REPO}"
+if [[ -z "$file" ]]; then
+	read timestamp file < <(\
+		find *"$PKGEXT" -type f -printf "%T@ %p\n" 2>/dev/null | sort -nr
+	)
+fi
+
+# define $path, $host
+parserepo "$repo"
+
+# define some vars
+usage="Usage: $prog [package-file] [repo]
+
+    Add <package-file> to <repo>.
+"
+
+# validate config and arguments
+if [[ "$*" == *--help* ]]; then
+	die "$usage"
+elif [[ -z "$repo" || -z "$path" ]]; then
+	die "Repo %s not found in %s: %s" "$repo" "REPOS" "$conf"
+elif [[ -z "$file" ]]; then
+	die "File not found: %s" "*$PKGEXT"
+elif [[ ! -f "$file" ]]; then
+	die "File not found: %s" "$file"
+elif [[ "$file" != *$PKGEXT ]]; then
+	die "Invalid package extension: %s" "$file"
+fi
+
+# add package
+[[ $file =~ (.+)-([^-]+)-([^-]+)-([^-]+)$PKGEXT ]]
+pkg="${BASH_REMATCH[1]}"
+db="$path/$repo.db.tar.gz"
+if [[ -z "$host" ]]; then
+	# remove old versions of the package
+	find "$path" -type f -regex ".*/$pkg-[^-]+-[^-]+-[^-]+$PKGEXT" \
+		-delete -exec printf "removed '%s'\n" {} \;
+
+	# add package to the repo
+	set -e
+	msg "Adding %s to %s..." "$file" "$repo"
+	cp -v -- "$file" "$path/" \
+		&& repo-add "$db" "$path/${file##*/}"
+else
+	# remove old versions of the package
+	set -e
+	ssh -- "$host" \
+		"find \"$path\" -type f -regex \".*/$pkg-[^-]+-[^-]+-[^-]+$PKGEXT\" -delete -exec printf \"removed '%s'\n\" {} \;"
+
+	# add package to the repo
+	msg "Adding %s to %s..." "$file" "$repo"
+	scp -- "$file" "$host:$path/"
+	ssh -- "$host" "repo-add \"$db\" \"$path/${file##*/}\""
+fi
+

@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# read config and define useful vars
+. pacrepo
+
+# needed for $PKGEXT
+if [[ -f /etc/makepkg.conf ]]; then
+	. /etc/makepkg.conf
+fi
+
+# parse args
+pkg="$(basename -- "${1%-*-*-*$PKGEXT}")"
+repo="${2-$REPO}"
+
+# define $path, $host
+parserepo "$repo"
+
+# define some vars
+usage="Usage: $prog <package> [repo]
+
+    Remove <package> from <repo>.
+"
+
+# validate config and arguments
+if [[ "$*" == *--help* ]]; then
+	die "$usage"
+elif [[ -z "$repo" || -z "$path" ]]; then
+	die "Repo %s not found in %s: %s" "$repo" "REPOS" "$conf"
+elif [[ -z "$pkg" ]]; then
+    die "$usage"
+fi
+
+# remove package
+db="$path/$repo.db.tar.gz"
+if [[ -z "$host" ]]; then
+	# remove package from the repo
+	msg "Removing %s from %s..." "$pkg" "$repo"
+	find "$path" -type f -regex ".*/$pkg-[^-]+-[^-]+-[^-]+$PKGEXT" \
+		-delete -exec printf "removed '%s'\n" {} \;
+	repo-remove "$db" "$pkg"
+else
+	# remove package from the repo
+	msg "Removing %s from %s..." "$pkg" "$repo"
+	ssh -- "$host" \
+		"find \"$path\" -type f -regex \".*/$pkg-[^-]+-[^-]+-[^-]+$PKGEXT\" -delete -exec printf \"removed '%s'\n\" {} \; ; repo-remove \"$db\" \"$pkg\""
+
+fi
+

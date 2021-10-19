@@ -24,7 +24,7 @@ Configure
 The config file is at +/etc/pacrepo.conf+. You can define the following
 options within it:
 
-**REPOS**=( name=[host:]/path ... )::
+**REPOS**=( [name]=/path [name2]=host:/path ... )::
 	A list of repositories for +addpkg+ and +rmpkg+ to manage. 'name' is the
 	name of the repository in +CONFIG+, '/path' is the full path to the
 	repository on the filesystem, and 'host' (optional) is the ip address or
