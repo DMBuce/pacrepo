@@ -37,8 +37,8 @@ die() {
 parserepo() {
 	local repo="$1"
 	path="${REPOS[$repo]}"
-	host="${path##:*}"
-	path="${path%*:}"
+	host="${path%%:*}"
+	path="${path#*:}"
 }
 
 main() {
