@@ -23,7 +23,9 @@ parserepo "$repo"
 # define some vars
 usage="Usage: $prog [package-file] [repo]
 
-    Add <package-file> to <repo>.
+    Add <package-file> to <repo>. The default repo is configured in
+    $conf. If no package file is specified, use the most recent package file
+    in the current directory.
 "
 
 # validate config and arguments

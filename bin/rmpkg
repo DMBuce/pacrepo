@@ -18,7 +18,8 @@ parserepo "$repo"
 # define some vars
 usage="Usage: $prog <package> [repo]
 
-    Remove <package> from <repo>.
+    Remove <package-file> from <repo>. The default repo is configured in
+    $conf.
 "
 
 # validate config and arguments

@@ -9,7 +9,6 @@ declare -A REPOS
 if [[ -f "$conf" ]]; then
 	. "$conf"
 fi
-unset conf
 
 # set defaults
 (( "${#REPOS[@]}" )) || REPOS=()
@@ -48,7 +47,8 @@ main() {
 	usage="\
 Usage: $prog [repo] <pacman-args>
 
-    Run pacman against a single <repo>.
+    Run pacman against a single <repo>. The default repo is configured in
+    $conf.
 "
 
 	# parse args
