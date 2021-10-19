@@ -49,13 +49,12 @@ PACKAGE   = pacrepo
 BUGREPORT = https://github.com/DMBuce/pacrepo/issues
 URL       = https://github.com/DMBuce/pacrepo
 
-BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg bin/mirrorlist bin/pacpatch
+BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg bin/pacpatch
 ETCFILES         = etc/pacrepo.conf
 EXECFILES        = lib/bootstrap.sh
 CLEANFILES       = $(BINFILES) $(EXECFILES)
 
 INSTALL_FILES    = $(DESTDIR)$(bindir)/pacrepo $(DESTDIR)$(bindir)/addpkg \
-                   $(DESTDIR)$(bindir)/rmpkg $(DESTDIR)$(bindir)/mirrorlist \
                    $(DESTDIR)$(bindir)/pacpatch \
                    $(DESTDIR)$(sysconfdir)/pacrepo.conf $(DESTDIR)$(libexecdir)/pacrepo/bootstrap.sh
 INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir) $(DESTDIR)$(libexecdir)/pacrepo
