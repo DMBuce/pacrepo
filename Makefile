@@ -44,36 +44,23 @@ LN_S        = ln -s
 SED_INPLACE = sed -i
 
 PACKAGE   = pacrepo
-#PROG      = pacrepo
+PROG      = pacrepo
 #VERSION   = 0.0.0
 BUGREPORT = https://github.com/DMBuce/pacrepo/issues
 URL       = https://github.com/DMBuce/pacrepo
 
-BINFILES         = bin/pacrepo bin/addpkg bin/rmpkg bin/pacpatch
-ETCFILES         = etc/pacrepo.conf
-EXECFILES        = lib/bootstrap.sh
-CLEANFILES       = $(BINFILES) $(EXECFILES)
-
-INSTALL_FILES    = $(DESTDIR)$(bindir)/pacrepo $(DESTDIR)$(bindir)/addpkg \
-                   $(DESTDIR)$(bindir)/pacpatch \
-                   $(DESTDIR)$(sysconfdir)/pacrepo.conf $(DESTDIR)$(libexecdir)/pacrepo/bootstrap.sh
-INSTALL_DIRS     = $(DESTDIR)$(bindir) $(DESTDIR)$(sysconfdir) $(DESTDIR)$(libexecdir)/pacrepo
+BINFILES         = $(wildcard bin/*)
+ETCFILES         = $(shell find etc/ -type f)
+BINFILES_INSTALL = $(BINFILES:bin/%=$(DESTDIR)$(bindir)/%)
+ETCFILES_INSTALL = $(ETCFILES:etc/%=$(DESTDIR)$(sysconfdir)/%)
+INSTALL_FILES    = $(BINFILES_INSTALL) $(ETCFILES_INSTALL)
+INSTALL_DIRS     = $(sort $(dir $(INSTALL_FILES)))
 
 .PHONY: all
-all: $(BINFILES) $(ETCFILES) $(EXECFILES)
-
-.PHONY: clean
-clean:
-	rm -f $(CLEANFILES)
+all:
 
 .PHONY: install
-install: all $(INSTALL_FILES)
-
-$(INSTALL_FILES): installdirs
-
-.PHONY: uninstall
-uninstall:
-	rm -f $(INSTALL_FILES)
+install: all installdirs $(INSTALL_FILES)
 
 .PHONY: installdirs
 installdirs: $(INSTALL_DIRS)
@@ -81,23 +68,10 @@ installdirs: $(INSTALL_DIRS)
 $(INSTALL_DIRS):
 	$(INSTALL) -d $@
 
-$(DESTDIR)$(libexecdir)/pacrepo/bootstrap.sh: lib/bootstrap.sh
-	$(INSTALL) $< $@
-
-$(DESTDIR)$(sysconfdir)/pacrepo.conf: etc/pacrepo.conf
-	$(INSTALL) $< $@
-
 $(DESTDIR)$(bindir)/%: bin/%
 	$(INSTALL_PROGRAM) $< $@
 
-bin/%: bin/%.in
-	cp $< $@
-	$(SED_INPLACE) 's?@sysconfdir@?$(sysconfdir)?g'   $@
-	$(SED_INPLACE) 's?@libexecdir@?$(libexecdir)?g'   $@
-
-lib/%: lib/%.in
-	cp $< $@
-	$(SED_INPLACE) 's?@sysconfdir@?$(sysconfdir)?g'   $@
-	$(SED_INPLACE) 's?@libexecdir@?$(libexecdir)?g'   $@
+$(DESTDIR)$(sysconfdir)/%: etc/%
+	$(INSTALL_DATA) $< $@
 
 # vim: set ft=make:
