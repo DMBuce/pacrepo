@@ -56,10 +56,10 @@ Usage: $prog [repo] <pacman-args>
 		die "$usage"
 	elif [[ ! -r "$pacconf" ]]; then
 		die "Can't read config: %s" "$pacconf"
-	elif egrep -q "^[[:space:]]*\[$1\][[:space:]]*$" "$pacconf"; then
+	elif grep -Eq "^[[:space:]]*\[$1\][[:space:]]*$" "$pacconf"; then
 		repo="$1"
 		shift
-	elif egrep -q "^[[:space:]]*\[$REPO\][[:space:]]*$" "$pacconf"; then
+	elif grep -Eq "^[[:space:]]*\[$REPO\][[:space:]]*$" "$pacconf"; then
 		repo="$REPO"
 	else
 		die "Repo not found in config: %s" "$pacconf"
